@@ -8,8 +8,6 @@ const Products = () => import('../pages/products.vue')
 const News = () => import('../pages/news.vue')
 const Store = () => import('../pages/store.vue')
 const Contact = () => import('../pages/contact.vue')
-const Cart = () => import('../pages/cart.vue')
-const NewsDetail = () => import('../pages/newsDetail.vue')
 
 const routes = [
   { 
@@ -37,12 +35,6 @@ const routes = [
     meta: { title: '最新消息 | 多麥烘焙' } 
   },
   { 
-    path: '/news/:id', 
-    name: 'newsDetail',
-    component: NewsDetail, 
-    meta: { title: '活動詳情 | 多麥烘焙' } 
-  },
-  { 
     path: '/store', 
     name: 'store',
     component: Store, 
@@ -53,12 +45,6 @@ const routes = [
     name: 'contact',
     component: Contact, 
     meta: { title: '聯絡我們 | 多麥烘焙' } 
-  },
-  { 
-    path: '/cart', 
-    name: 'cart',
-    component: Cart, 
-    meta: { title: '購物車 | 多麥烘焙' } 
   },
   // 處理 404 頁面 (建議面試加分項)
   {

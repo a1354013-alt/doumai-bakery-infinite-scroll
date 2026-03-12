@@ -17,11 +17,6 @@
 - **路徑別名**：使用 `@` 指向 `src` 目錄，簡化導入路徑。
 - **全域樣式管理**：集中管理 CSS 變數，確保品牌視覺一致性。
 
-### 4. 非功能性需求 (Non-Functional Requirements)
-- **可訪問性 (A11Y)**：遵循語義化 HTML 規範，為互動元件加入 `aria-label`，確保螢幕閱讀器友善。
-- **單元測試 (Unit Testing)**：配置 **Vitest** 環境，並針對購物車核心邏輯編寫測試案例 (`src/utils/cartLogic.spec.js`)，展現對程式碼品質的嚴謹態度。
-- **SEO 優化**：配置完整的 Meta Tags 與 Open Graph 協定，並實作動態頁面標題管理。
-
 ## 🛠 技術棧
 - **框架**: Vue 3 (Composition API)
 - **構建工具**: Vite

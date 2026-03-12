@@ -5,56 +5,43 @@
       <h1 class="page-title">全部商品</h1>
     </header>
 
-    <!-- 使用全域麵包屑元件 -->
-    <AppBreadcrumb :items="[{ name: '最新商品', path: '/products' }]" />
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-section">
+      <div class="container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <RouterLink to="/">首頁</RouterLink>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">最新商品</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
 
     <!-- Products -->
     <section class="container py-5">
-      <!-- 優化後的分頁標籤 (Tabs) -->
       <div class="filter-buttons">
-        <button 
-          v-for="f in filters" 
-          :key="f.key" 
-          class="btn btn-filter" 
-          :class="{ active: activeFilter === f.key }"
-          type="button" 
-          @click="handleFilterChange(f.key)"
-          :aria-pressed="activeFilter === f.key"
-        >
+        <button v-for="f in filters" :key="f.key" class="btn btn-filter" :class="{ active: activeFilter === f.key }"
+          type="button" @click="activeFilter = f.key">
           {{ f.label }}
         </button>
       </div>
 
       <!-- 用 TransitionGroup 做篩選動畫 -->
       <TransitionGroup name="fade-up" tag="div" class="row g-4">
-        <div v-for="p in displayedProducts" :key="p.id" class="col-md-4 col-sm-6">
-          <ProductCard :product="p" :show-add-cart="true" @add-to-cart="handleAddToCart" />
+        <div v-for="p in filteredProducts" :key="p.id" class="col-md-4 col-sm-6">
+          <ProductCard :product="p" :show-add-cart="true" @add-to-cart="addToCart" />
         </div>
       </TransitionGroup>
-
-      <!-- 無限捲動觸發點與載入動畫 -->
-      <div ref="loadMoreTrigger" class="text-center py-5 mt-4">
-        <div v-if="isLoading" class="spinner-border text-brand" role="status">
-          <span class="visually-hidden">載入中...</span>
-        </div>
-        <p v-else-if="isFinished && filteredProducts.length > 0" class="text-muted small">
-          已經顯示所有商品了
-        </p>
-        <p v-else-if="filteredProducts.length === 0" class="text-muted">
-          找不到相關商品
-        </p>
-      </div>
     </section>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
+import { computed, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import ProductCard from '@/components/ProductCard.vue'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import { useCartStore } from '@/stores/cartStore'
-
-const cartStore = useCartStore()
 
 /** 篩選按鈕 */
 const filters = [
@@ -66,8 +53,8 @@ const filters = [
 
 const activeFilter = ref('all')
 
-/** 商品資料庫 */
-const allProducts = [
+/** 商品資料 */
+const products = ref([
   { id: 'p001', category: 'bread', badge: '熱銷', title: '招牌蒜香酥片', price: 150, image: '/images/news1.png' },
   { id: 'p002', category: 'dessert', badge: '新品', title: '鮮奶油莓果盒子', price: 250, image: '/images/products1.png' },
   { id: 'p003', category: 'gift', badge: '熱銷', title: '英式手工餅乾禮盒', price: 280, image: '/images/products2.png' },
@@ -110,68 +97,16 @@ const allProducts = [
   { id: 'p040', category: 'bread', badge: '', title: '沙拉麵包', price: 49, image: '/images/products39.png' },
   { id: 'p041', category: 'gift', badge: '', title: '蛋黃酥禮盒', price: 299, image: '/images/products40.png' },
   { id: 'p042', category: 'gift', badge: '', title: '小月餅禮盒', price: 239, image: '/images/products41.png' },
-]
-
-// 無限捲動相關狀態
-const loadMoreTrigger = ref(null)
-const displayedCount = ref(9) // 初始顯示 9 筆
-const isLoading = ref(false)
-const isFinished = ref(false)
-const pageSize = 6 // 每次載入 6 筆
+])
 
 const filteredProducts = computed(() => {
-  if (activeFilter.value === 'all') return allProducts
-  return allProducts.filter((p) => p.category === activeFilter.value)
+  if (activeFilter.value === 'all') return products.value
+  return products.value.filter((p) => p.category === activeFilter.value)
 })
 
-const displayedProducts = computed(() => {
-  return filteredProducts.value.slice(0, displayedCount.value)
-})
-
-// 監聽篩選變化，重置計數
-const handleFilterChange = (key) => {
-  activeFilter.value = key
-  displayedCount.value = 9
-  isFinished.value = false
-}
-
-// 載入更多邏輯
-const loadMore = async () => {
-  if (isLoading.value || isFinished.value) return
-  
-  isLoading.value = true
-  // 模擬網路延遲
-  await new Promise(resolve => setTimeout(resolve, 800))
-  
-  displayedCount.value += pageSize
-  
-  if (displayedCount.value >= filteredProducts.value.length) {
-    isFinished.value = true
-  }
-  isLoading.value = false
-}
-
-// Intersection Observer 實作
-let observer = null
-
-onMounted(() => {
-  observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      loadMore()
-    }
-  }, { threshold: 0.1 })
-
-  if (loadMoreTrigger.value) {
-    observer.observe(loadMoreTrigger.value)
-  }
-})
-
-onUnmounted(() => {
-  if (observer) observer.disconnect()
-})
-
-function handleAddToCart(product) {
-  cartStore.addItem(product)
+function addToCart(product) {
+  // eslint-disable-next-line no-console
+  console.log('加入購物車：', product)
 }
 </script>
 
@@ -196,40 +131,47 @@ function handleAddToCart(product) {
   letter-spacing: 2px;
 }
 
+.breadcrumb-section {
+  background-color: #f8f9fa;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+}
+
+.breadcrumb-item a {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.breadcrumb-item.active {
+  color: var(--brand-color);
+}
+
 .filter-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 10px;
   margin-bottom: 3rem;
   flex-wrap: wrap;
 }
 
 .btn-filter {
   border: 1px solid #ddd;
-  padding: 10px 28px;
+  padding: 8px 24px;
   border-radius: 30px;
   background: white;
   color: #555;
-  font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s;
 }
 
+.btn-filter:hover,
 .btn-filter.active {
   background-color: var(--brand-color);
   border-color: var(--brand-color);
   color: white;
-  box-shadow: 0 4px 12px rgba(207, 46, 90, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-filter:hover:not(.active) {
-  background-color: #f8f9fa;
-  border-color: var(--brand-color);
-  color: var(--brand-color);
-}
-
-.text-brand {
-  color: var(--brand-color);
 }
 
 /* 動畫 */

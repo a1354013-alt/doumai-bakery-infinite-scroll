@@ -5,14 +5,12 @@
       <slot />
     </main>
     <AppFooter />
-    <AppToast />
   </div>
 </template>
 
 <script setup>
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
-import AppToast from '@/components/AppToast.vue'
 </script>
 
 <style scoped>
