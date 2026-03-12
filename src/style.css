@@ -1,0 +1,57 @@
+:root {
+  --brand-color: #cf2e5a;
+  --brand-hover: #a81c42;
+  --text-gray: #555;
+  --bg-gray: #f9f9f9;
+  --font-main: 'Noto Sans TC', sans-serif;
+  --font-serif: 'Noto Serif TC', serif;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--text-gray);
+  line-height: 1.6;
+  margin: 0;
+  background-color: #fff;
+}
+
+h1, h2, h3, h4, h5, h6, .title-serif {
+  font-family: var(--font-serif);
+}
+
+a {
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+/* 讓固定 navbar 不會蓋住內容 */
+.pt-nav {
+  padding-top: 56px;
+}
+
+/* 自定義捲軸樣式 (面試加分細節) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-color);
+}
+
+/* 修正 Bootstrap 與 Vite 預設樣式衝突 */
+#app {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
