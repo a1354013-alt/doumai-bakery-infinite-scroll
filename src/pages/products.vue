@@ -5,19 +5,8 @@
       <h1 class="page-title">全部商品</h1>
     </header>
 
-    <!-- Breadcrumb -->
-    <div class="breadcrumb-section">
-      <div class="container">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-              <RouterLink to="/">首頁</RouterLink>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">最新商品</li>
-          </ol>
-        </nav>
-      </div>
-    </div>
+    <!-- 使用全域麵包屑元件 -->
+    <AppBreadcrumb :items="[{ name: '最新商品', path: '/products' }]" />
 
     <!-- Products -->
     <section class="container py-5">
@@ -40,8 +29,8 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { RouterLink } from 'vue-router'
 import ProductCard from '@/components/ProductCard.vue'
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 
 /** 篩選按鈕 */
 const filters = [
@@ -129,25 +118,6 @@ function addToCart(product) {
   font-size: 2.5rem;
   font-weight: 700;
   letter-spacing: 2px;
-}
-
-.breadcrumb-section {
-  background-color: #f8f9fa;
-  padding: 15px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.breadcrumb {
-  margin-bottom: 0;
-}
-
-.breadcrumb-item a {
-  color: #6c757d;
-  text-decoration: none;
-}
-
-.breadcrumb-item.active {
-  color: var(--brand-color);
 }
 
 .filter-buttons {

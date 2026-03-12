@@ -2,50 +2,49 @@
   <footer class="footer mt-auto">
     <div class="container py-5">
       <div class="row g-4">
+        <!-- 品牌介紹 -->
         <div class="col-lg-4 col-md-6">
-          <h5 class="footer-title">多麥健康烘焙</h5>
-          <p class="footer-desc">
-            堅持手作的溫度，選用天然食材，為您帶來最純粹的幸福滋味。
-          </p>
+          <h5 class="footer-title">{{ brandInfo.name }}</h5>
+          <p class="footer-desc">{{ brandInfo.description }}</p>
           <div class="social-links">
-            <a href="#"><i class="bi bi-facebook"></i></a>
-            <a href="#"><i class="bi bi-instagram"></i></a>
-            <a href="#"><i class="bi bi-line"></i></a>
+            <a v-for="social in socialLinks" :key="social.icon" :href="social.url" :title="social.name">
+              <i :class="['bi', social.icon]"></i>
+            </a>
           </div>
         </div>
         
+        <!-- 快速連結 (資料驅動) -->
         <div class="col-lg-2 col-md-6">
           <h5 class="footer-title">快速連結</h5>
           <ul class="footer-links">
-            <li><RouterLink to="/about">關於我們</RouterLink></li>
-            <li><RouterLink to="/products">最新商品</RouterLink></li>
-            <li><RouterLink to="/store">門市資訊</RouterLink></li>
-            <li><RouterLink to="/contact">聯絡我們</RouterLink></li>
+            <li v-for="link in quickLinks" :key="link.path">
+              <RouterLink :to="link.path">{{ link.name }}</RouterLink>
+            </li>
           </ul>
         </div>
 
+        <!-- 聯絡資訊 (資料驅動) -->
         <div class="col-lg-3 col-md-6">
           <h5 class="footer-title">聯絡資訊</h5>
           <ul class="footer-info">
-            <li><i class="bi bi-geo-alt me-2"></i>台北市信義區烘焙路 1 號</li>
-            <li><i class="bi bi-telephone me-2"></i>02-1234-5678</li>
-            <li><i class="bi bi-envelope me-2"></i>service@bakery.com</li>
+            <li v-for="info in contactDetails" :key="info.icon">
+              <i :class="['bi', info.icon, 'me-2']"></i>
+              {{ info.text }}
+            </li>
           </ul>
         </div>
 
+        <!-- 營業時間 -->
         <div class="col-lg-3 col-md-6">
           <h5 class="footer-title">營業時間</h5>
-          <p class="footer-text">
-            週一至週日<br>
-            09:00 - 21:00
-          </p>
+          <p class="footer-text" v-html="openingHours"></p>
         </div>
       </div>
       
       <hr class="my-4 opacity-25">
       
       <div class="text-center">
-        <small class="copyright">© 2023 多麥烘焙 All Rights Reserved.</small>
+        <small class="copyright">© {{ new Date().getFullYear() }} {{ brandInfo.name }} All Rights Reserved.</small>
       </div>
     </div>
   </footer>
@@ -53,6 +52,33 @@
 
 <script setup>
 import { RouterLink } from 'vue-router'
+
+const brandInfo = {
+  name: '多麥健康烘焙',
+  description: '堅持手作的溫度，選用天然食材，為您帶來最純粹的幸福滋味。'
+}
+
+const quickLinks = [
+  { name: '關於我們', path: '/about' },
+  { name: '最新商品', path: '/products' },
+  { name: '最新消息', path: '/news' },
+  { name: '門市資訊', path: '/store' },
+  { name: '聯絡我們', path: '/contact' },
+]
+
+const contactDetails = [
+  { icon: 'bi-geo-alt', text: '台北市信義區烘焙路 1 號' },
+  { icon: 'bi-telephone', text: '02-1234-5678' },
+  { icon: 'bi-envelope', text: 'service@bakery.com' },
+]
+
+const socialLinks = [
+  { name: 'Facebook', icon: 'bi-facebook', url: '#' },
+  { name: 'Instagram', icon: 'bi-instagram', url: '#' },
+  { name: 'Line', icon: 'bi-line', url: '#' },
+]
+
+const openingHours = '週一至週日<br>09:00 - 21:00'
 </script>
 
 <style scoped>
@@ -82,6 +108,7 @@ import { RouterLink } from 'vue-router'
 .footer-desc {
   font-size: 0.9rem;
   color: #bbb;
+  line-height: 1.8;
 }
 
 .footer-links, .footer-info {
@@ -109,11 +136,13 @@ import { RouterLink } from 'vue-router'
   color: #fff;
   font-size: 1.2rem;
   margin-right: 1rem;
-  transition: color 0.3s;
+  transition: transform 0.3s, color 0.3s;
+  display: inline-block;
 }
 
 .social-links a:hover {
   color: var(--brand-color);
+  transform: translateY(-3px);
 }
 
 .copyright {
@@ -121,7 +150,11 @@ import { RouterLink } from 'vue-router'
 }
 
 .footer-info li {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: flex-start;
+}
+
+.footer-info i {
+  color: var(--brand-color);
 }
 </style>
