@@ -50,10 +50,8 @@
 
         <div class="row text-center g-4">
           <div class="col-md-4">
-            <div class="feature-card p-4 bg-white shadow-sm h-100 rounded">
-              <div class="icon-box">
-                <i class="bi bi-flower1 feature-icon"></i>
-              </div>
+            <div class="p-4 bg-white shadow-sm h-100 rounded">
+              <i class="bi bi-flower1 feature-icon"></i>
               <h4 class="mb-3 serif-font">嚴選天然食材</h4>
               <p class="text-muted">
                 拒絕人工香精與色素，堅持使用進口奶油、在地小農鮮乳與新鮮蔬果，還原食物最純粹的美味。
@@ -62,10 +60,8 @@
           </div>
 
           <div class="col-md-4">
-            <div class="feature-card p-4 bg-white shadow-sm h-100 rounded">
-              <div class="icon-box">
-                <i class="bi bi-clock-history feature-icon"></i>
-              </div>
+            <div class="p-4 bg-white shadow-sm h-100 rounded">
+              <i class="bi bi-clock-history feature-icon"></i>
               <h4 class="mb-3 serif-font">長時間低溫發酵</h4>
               <p class="text-muted">
                 美味需要等待。我們採用老麵與天然酵母，經過12小時以上的低溫熟成，讓麵包組織更細緻、保濕。
@@ -74,10 +70,8 @@
           </div>
 
           <div class="col-md-4">
-            <div class="feature-card p-4 bg-white shadow-sm h-100 rounded">
-              <div class="icon-box">
-                <i class="bi bi-heart feature-icon"></i>
-              </div>
+            <div class="p-4 bg-white shadow-sm h-100 rounded">
+              <i class="bi bi-heart feature-icon"></i>
               <h4 class="mb-3 serif-font">職人手作溫度</h4>
               <p class="text-muted">
                 機器無法取代雙手的觸感。每一顆麵團都經過師傅的揉捏、整型，注入了我們對烘焙的熱情與祝福。
@@ -170,25 +164,6 @@ import { RouterLink } from 'vue-router'
 
 .serif-font {
   font-family: 'Noto Serif TC', serif;
-}
-
-.feature-card {
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  border: 1px solid transparent;
-}
-
-.feature-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
-  border-color: var(--brand-color);
-}
-
-.icon-box {
-  transition: transform 0.4s ease;
-}
-
-.feature-card:hover .icon-box {
-  transform: scale(1.1);
 }
 
 .feature-icon {

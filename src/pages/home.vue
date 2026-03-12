@@ -27,21 +27,17 @@
       </button>
     </section>
 
-    <!-- 近期活動 (資料驅動重構) -->
+    <!-- 近期活動 -->
     <section class="container my-5">
       <h2 class="section-title">近期活動</h2>
       <div class="row g-4">
-        <div v-for="news in latestNews" :key="news.id" class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm news-card">
-            <div class="position-relative overflow-hidden">
-              <img :src="news.image" class="card-img-top lightbox-trigger" :alt="news.title" @click="openLightbox(news.image, news.title)" />
-              <span class="badge bg-brand position-absolute top-0 start-0 m-3">{{ news.category }}</span>
-            </div>
+        <div v-for="a in activities" :key="a.title" class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm">
+            <img :src="a.img" class="card-img-top lightbox-trigger" :alt="a.alt" @click="openLightbox(a.img, a.alt)" />
             <div class="card-body">
-              <small class="text-muted d-block mb-2">{{ news.date }}</small>
-              <h5 class="card-title fw-bold">{{ news.title }}</h5>
-              <p class="card-text text-muted small">{{ news.summary }}</p>
-              <RouterLink :to="`/news/${news.id}`" class="read-more">閱讀更多</RouterLink>
+              <h5 class="card-title">{{ a.title }}</h5>
+              <p class="card-text text-muted">{{ a.text }}</p>
+              <a href="#" class="read-more" @click.prevent>閱讀更多</a>
             </div>
           </div>
         </div>
@@ -63,8 +59,8 @@
     <section class="container my-5">
       <h2 class="section-title">熱門商品</h2>
       <div class="row g-4">
-        <div v-for="p in hotProducts" :key="p.id" class="col-md-4 col-sm-6">
-          <ProductCard :product="p" :show-add-cart="true" @add-to-cart="handleAddToCart" />
+        <div v-for="p in hotProducts" :key="p.title" class="col-md-4 col-sm-6">
+          <ProductCard :product="p" :show-add-cart="true" @add-to-cart="addToCart" />
         </div>
       </div>
       <div class="text-center mt-5">
@@ -95,14 +91,9 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Modal } from 'bootstrap'
-import { RouterLink } from 'vue-router'
 import ProductCard from '@/components/ProductCard.vue'
-import { useCartStore } from '@/stores/cartStore'
-import { newsData } from '@/data/newsData'
-
-const cartStore = useCartStore()
 
 const slides = [
   { img: '/images/banner2.png', alt: '蒜香酥片', title: '蒜香酥片', subtitle: '— 每一口都是極致的酥脆享受 —' },
@@ -110,16 +101,17 @@ const slides = [
   { img: '/images/banner1.png', alt: '精緻甜點', title: '法式甜點', subtitle: '— 享受午後的甜蜜時光 —' },
 ]
 
+const activities = [
+  { img: '/images/news1.png', alt: '蒜香酥片新品', title: '獨特蒜片 ＜新品上市＞', text: '特選在地蒜頭，低溫烘烤製成，保留最原始的香氣，是下午茶的最佳點心。' },
+  { img: '/images/news2.png', alt: '天然發酵吐司', title: '好的麵包來自於天然發酵', text: '堅持使用天然酵母，經過長時間低溫發酵，讓麵包口感更為軟Q。' },
+  { img: '/images/news3.png', alt: '職人手作精神', title: '職人手作精神', text: '三十年的烘焙經驗，用心對待每一個麵團，只為呈現最完美的味道。' },
+]
+
 const hotProducts = [
   { id: 'h1', image: '/images/products1.png', alt: '草莓蛋糕', title: '莓果盒子 (銷售No.1)', price: 250, badge: 'HOT' },
   { id: 'h2', image: '/images/products2.png', alt: '手工餅乾', title: '英式伯爵手工餅乾', price: 120 },
   { id: 'h3', image: '/images/products3.png', alt: '手工蛋捲', title: '手工蛋捲 (原味)', price: 280 },
 ]
-
-// 取得最新的三則消息
-const latestNews = computed(() => {
-  return [...newsData].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3)
-})
 
 const lightboxSrc = ref('')
 const lightboxAlt = ref('')
@@ -136,8 +128,8 @@ function openLightbox(src, alt = 'Image') {
   lightboxModal?.show()
 }
 
-function handleAddToCart(product) {
-  cartStore.addToCart(product)
+function addToCart(product) {
+  console.log('Home 加入購物車：', product)
 }
 </script>
 
@@ -230,24 +222,5 @@ function handleAddToCart(product) {
   text-decoration: none;
   font-weight: 600;
   border-bottom: 1px solid var(--brand-color);
-  transition: all 0.3s;
-}
-
-.read-more:hover {
-  color: var(--brand-hover);
-  padding-left: 5px;
-}
-
-.news-card {
-  transition: all 0.3s ease;
-}
-
-.news-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
-}
-
-.bg-brand {
-  background-color: var(--brand-color) !important;
 }
 </style>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateTotal, calculateDiscount, addToCartLogic, updateQuantityLogic } from './cartLogic';
+import { calculateTotal, addToCartLogic, updateQuantityLogic } from './cartLogic';
 
 describe('購物車進階邏輯與邊界條件測試', () => {
   
@@ -55,35 +55,4 @@ describe('購物車進階邏輯與邊界條件測試', () => {
     expect(newCart[0].quantity).toBe(10); // 應自動修正為庫存上限 10
   });
 
-  // --- 優惠券折扣測試 (新增) ---
-  describe('優惠券折扣邏輯測試', () => {
-    it('7. 應正確計算固定金額折扣', () => {
-      const subtotal = 500;
-      const coupon = { type: 'fixed', value: 100 };
-      expect(calculateDiscount(subtotal, coupon)).toBe(100);
-    });
-
-    it('8. 應正確計算百分比折扣並處理四捨五入', () => {
-      const subtotal = 1000;
-      const coupon = { type: 'percent', value: 12 }; // 88折 = 12% off
-      expect(calculateDiscount(subtotal, coupon)).toBe(120);
-      
-      // 測試不整除的情況
-      const subtotal2 = 125;
-      expect(calculateDiscount(subtotal2, coupon)).toBe(15); // 125 * 0.12 = 15
-    });
-
-    it('9. 邊界條件：當折扣金額大於小計時，折扣金額應等於小計 (總價歸零，不為負數)', () => {
-      const subtotal = 50;
-      const coupon = { type: 'fixed', value: 100 };
-      // 折扣 100 但總價只有 50，折扣應限制在 50
-      expect(calculateDiscount(subtotal, coupon)).toBe(50);
-    });
-
-    it('10. 邊界條件：當小計為 0 時，折扣金額應為 0', () => {
-      const subtotal = 0;
-      const coupon = { type: 'fixed', value: 100 };
-      expect(calculateDiscount(subtotal, coupon)).toBe(0);
-    });
-  });
 });

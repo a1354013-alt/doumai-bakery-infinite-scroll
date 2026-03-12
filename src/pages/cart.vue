@@ -54,9 +54,6 @@
 
         <!-- 訂單摘要 -->
         <div class="col-lg-4">
-          <!-- UX 巧思：免運進度條 -->
-          <FreeShippingProgress />
-          
           <div class="card border-0 shadow-sm p-4">
             <h5 class="fw-bold mb-4">訂單摘要</h5>
             <div class="d-flex justify-content-between mb-3">
@@ -65,15 +62,14 @@
             </div>
             <div class="d-flex justify-content-between mb-3">
               <span>運費</span>
-              <span v-if="cartStore.totalAmount >= 1000" class="text-success">免運費</span>
-              <span v-else>NT. 100</span>
+              <span class="text-success">免運費</span>
             </div>
             <hr>
             <div class="d-flex justify-content-between mb-4">
               <span class="h5 fw-bold">總計</span>
-              <span class="h5 fw-bold text-brand">NT. {{ cartStore.totalAmount >= 1000 ? cartStore.totalAmount : cartStore.totalAmount + 100 }}</span>
+              <span class="h5 fw-bold text-brand">NT. {{ cartStore.totalAmount }}</span>
             </div>
-            <RouterLink to="/checkout" class="btn btn-brand w-100 py-3 fw-bold">前往結帳</RouterLink>
+            <button class="btn btn-brand w-100 py-3 fw-bold">前往結帳</button>
             <RouterLink to="/products" class="btn btn-link w-100 mt-2 text-muted text-decoration-none">
               <i class="bi bi-arrow-left me-2"></i>繼續購物
             </RouterLink>
@@ -99,7 +95,6 @@
 <script setup>
 import { useCartStore } from '@/stores/cartStore'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import FreeShippingProgress from '@/components/FreeShippingProgress.vue'
 
 const cartStore = useCartStore()
 </script>

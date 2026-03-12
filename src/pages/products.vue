@@ -18,26 +18,50 @@
           class="btn btn-filter" 
           :class="{ active: activeFilter === f.key }"
           type="button" 
-          @click="activeFilter = f.key"
+          @click="handleFilterChange(f.key)"
           :aria-pressed="activeFilter === f.key"
         >
           {{ f.label }}
         </button>
       </div>
 
-      <!-- 用 TransitionGroup 做篩選動畫 -->
-      <TransitionGroup name="fade-up" tag="div" class="row g-4">
-        <div v-for="p in filteredProducts" :key="p.id" class="col-md-4 col-sm-6">
-          <ProductCard :product="p" :show-add-cart="true" @add-to-cart="handleAddToCart" />
+      <!-- 骨架屏展示 (初始載入時) -->
+      <div v-if="isInitialLoading" class="row g-4">
+        <div v-for="i in 6" :key="i" class="col-md-4 col-sm-6">
+          <ProductSkeleton />
         </div>
-      </TransitionGroup>
+      </div>
+
+      <!-- 真實內容展示 -->
+      <div v-else>
+        <!-- 用 TransitionGroup 做篩選動畫 -->
+        <TransitionGroup name="fade-up" tag="div" class="row g-4">
+          <div v-for="p in displayedProducts" :key="p.id" class="col-md-4 col-sm-6">
+            <ProductCard :product="p" :show-add-cart="true" @add-to-cart="handleAddToCart" />
+          </div>
+        </TransitionGroup>
+
+        <!-- 無限捲動觸發點與載入動畫 -->
+        <div ref="loadMoreTrigger" class="text-center py-5 mt-4">
+          <div v-if="isLoading" class="spinner-border text-brand" role="status">
+            <span class="visually-hidden">載入中...</span>
+          </div>
+          <p v-else-if="isFinished && filteredProducts.length > 0" class="text-muted small">
+            已經顯示所有商品了
+          </p>
+          <p v-else-if="filteredProducts.length === 0" class="text-muted">
+            找不到相關商品
+          </p>
+        </div>
+      </div>
     </section>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
+import ProductSkeleton from '@/components/ProductSkeleton.vue'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 import { useCartStore } from '@/stores/cartStore'
 
@@ -52,9 +76,10 @@ const filters = [
 ]
 
 const activeFilter = ref('all')
+const isInitialLoading = ref(true)
 
-/** 商品資料 */
-const products = ref([
+/** 商品資料庫 */
+const allProducts = [
   { id: 'p001', category: 'bread', badge: '熱銷', title: '招牌蒜香酥片', price: 150, image: '/images/news1.png' },
   { id: 'p002', category: 'dessert', badge: '新品', title: '鮮奶油莓果盒子', price: 250, image: '/images/products1.png' },
   { id: 'p003', category: 'gift', badge: '熱銷', title: '英式手工餅乾禮盒', price: 280, image: '/images/products2.png' },
@@ -97,15 +122,117 @@ const products = ref([
   { id: 'p040', category: 'bread', badge: '', title: '沙拉麵包', price: 49, image: '/images/products39.png' },
   { id: 'p041', category: 'gift', badge: '', title: '蛋黃酥禮盒', price: 299, image: '/images/products40.png' },
   { id: 'p042', category: 'gift', badge: '', title: '小月餅禮盒', price: 239, image: '/images/products41.png' },
-])
+]
+
+// 無限捲動相關狀態
+const loadMoreTrigger = ref(null)
+const displayedCount = ref(9)
+const isLoading = ref(false)
+const isFinished = ref(false)
+const pageSize = 6
 
 const filteredProducts = computed(() => {
-  if (activeFilter.value === 'all') return products.value
-  return products.value.filter((p) => p.category === activeFilter.value)
+  if (activeFilter.value === 'all') return allProducts
+  return allProducts.filter((p) => p.category === activeFilter.value)
+})
+
+const displayedProducts = computed(() => {
+  return filteredProducts.value.slice(0, displayedCount.value)
+})
+
+const handleFilterChange = (key) => {
+  activeFilter.value = key
+  displayedCount.value = 9
+  isFinished.value = false
+}
+
+/** 
+ * SEO 優化：動態生成 JSON-LD 結構化資料
+ * 這能讓 Google 搜尋結果直接顯示產品資訊
+ */
+const updateStructuredData = () => {
+  // 移除舊的腳本
+  const oldScript = document.getElementById('product-jsonld')
+  if (oldScript) oldScript.remove()
+
+  // 建立新的結構化資料
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": displayedProducts.value.map((p, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Product",
+        "name": p.title,
+        "image": window.location.origin + p.image,
+        "description": `${p.title} - 多麥健康烘焙精選商品`,
+        "offers": {
+          "@type": "Offer",
+          "price": p.price,
+          "priceCurrency": "TWD",
+          "availability": "https://schema.org/InStock"
+        }
+      }
+    }))
+  }
+
+  const script = document.createElement('script')
+  script.id = 'product-jsonld'
+  script.type = 'application/ld+json'
+  script.text = JSON.stringify(jsonLd)
+  document.head.appendChild(script)
+}
+
+// 監聽顯示產品變化，更新 SEO 資料
+watch(displayedProducts, () => {
+  if (!isInitialLoading.value) {
+    updateStructuredData()
+  }
+}, { deep: true })
+
+const loadMore = async () => {
+  if (isLoading.value || isFinished.value || isInitialLoading.value) return
+  
+  isLoading.value = true
+  await new Promise(resolve => setTimeout(resolve, 800))
+  
+  displayedCount.value += pageSize
+  
+  if (displayedCount.value >= filteredProducts.value.length) {
+    isFinished.value = true
+  }
+  isLoading.value = false
+}
+
+let observer = null
+
+onMounted(async () => {
+  // 模擬初始載入延遲
+  await new Promise(resolve => setTimeout(resolve, 1500))
+  isInitialLoading.value = false
+  updateStructuredData()
+
+  // 初始化無限捲動
+  observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      loadMore()
+    }
+  }, { threshold: 0.1 })
+
+  if (loadMoreTrigger.value) {
+    observer.observe(loadMoreTrigger.value)
+  }
+})
+
+onUnmounted(() => {
+  if (observer) observer.disconnect()
+  const script = document.getElementById('product-jsonld')
+  if (script) script.remove()
 })
 
 function handleAddToCart(product) {
-  cartStore.addToCart(product)
+  cartStore.addItem(product)
 }
 </script>
 
@@ -148,7 +275,6 @@ function handleAddToCart(product) {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 修正選中標籤的視覺效果：增加明顯底色與陰影 */
 .btn-filter.active {
   background-color: var(--brand-color);
   border-color: var(--brand-color);
@@ -160,6 +286,10 @@ function handleAddToCart(product) {
 .btn-filter:hover:not(.active) {
   background-color: #f8f9fa;
   border-color: var(--brand-color);
+  color: var(--brand-color);
+}
+
+.text-brand {
   color: var(--brand-color);
 }
 

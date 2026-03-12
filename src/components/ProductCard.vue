@@ -1,8 +1,18 @@
 <template>
   <div class="product-card h-100">
     <div class="product-img-wrapper">
+      <!-- 圖片載入佔位符 (Skeleton) -->
+      <div v-if="!isLoaded" class="image-placeholder"></div>
+      
       <span v-if="product.badge" class="product-badge">{{ product.badge }}</span>
-      <img :src="product.image || product.img" :alt="product.title" loading="lazy" />
+      
+      <img 
+        :src="product.image || product.img" 
+        :alt="product.title" 
+        loading="lazy" 
+        :class="{ 'is-loaded': isLoaded }"
+        @load="isLoaded = true"
+      />
     </div>
 
     <div class="card-body">
@@ -23,6 +33,8 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
 defineProps({
   product: {
     type: Object,
@@ -35,6 +47,8 @@ defineProps({
 })
 
 defineEmits(['add-to-cart'])
+
+const isLoaded = ref(false)
 </script>
 
 <style scoped>
@@ -57,17 +71,38 @@ defineEmits(['add-to-cart'])
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
+  background-color: #f8f9fa;
 }
 
 .product-img-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.product-img-wrapper img.is-loaded {
+  opacity: 1;
 }
 
 .product-card:hover .product-img-wrapper img {
   transform: scale(1.1);
+}
+
+/* 圖片載入佔位符動畫 */
+.image-placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  z-index: 0;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .product-badge {
