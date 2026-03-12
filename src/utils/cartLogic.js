@@ -1,6 +1,6 @@
 /**
  * 購物車核心邏輯 (進階版)
- * 包含邊界條件處理：庫存檢查、最小/最大數量限制
+ * 包含邊界條件處理：庫存檢查、最小/最大數量限制、優惠券折扣計算
  */
 
 export const calculateTotal = (items) => {
@@ -10,6 +10,22 @@ export const calculateTotal = (items) => {
     const quantity = Number(item.quantity) || 0;
     return total + (price * quantity);
   }, 0);
+};
+
+// 新增：優惠券折扣計算邏輯 (純函數)
+export const calculateDiscount = (subtotal, coupon) => {
+  if (!coupon || subtotal <= 0) return 0;
+  
+  let discount = 0;
+  if (coupon.type === 'fixed') {
+    discount = coupon.value;
+  } else if (coupon.type === 'percent') {
+    // 例如 12% off (88折)，折扣金額為 subtotal * 0.12
+    discount = Math.round(subtotal * (coupon.value / 100));
+  }
+  
+  // 邊界條件防護：確保折扣金額不會超過小計 (總價不可為負)
+  return Math.min(discount, subtotal);
 };
 
 export const addToCartLogic = (currentCart, product, stockLimit = 99) => {

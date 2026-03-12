@@ -10,9 +10,17 @@
 
     <!-- Products -->
     <section class="container py-5">
+      <!-- 優化後的分頁標籤 (Tabs) -->
       <div class="filter-buttons">
-        <button v-for="f in filters" :key="f.key" class="btn btn-filter" :class="{ active: activeFilter === f.key }"
-          type="button" @click="activeFilter = f.key">
+        <button 
+          v-for="f in filters" 
+          :key="f.key" 
+          class="btn btn-filter" 
+          :class="{ active: activeFilter === f.key }"
+          type="button" 
+          @click="activeFilter = f.key"
+          :aria-pressed="activeFilter === f.key"
+        >
           {{ f.label }}
         </button>
       </div>
@@ -20,7 +28,7 @@
       <!-- 用 TransitionGroup 做篩選動畫 -->
       <TransitionGroup name="fade-up" tag="div" class="row g-4">
         <div v-for="p in filteredProducts" :key="p.id" class="col-md-4 col-sm-6">
-          <ProductCard :product="p" :show-add-cart="true" @add-to-cart="addToCart" />
+          <ProductCard :product="p" :show-add-cart="true" @add-to-cart="handleAddToCart" />
         </div>
       </TransitionGroup>
     </section>
@@ -31,6 +39,9 @@
 import { computed, ref } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
+import { useCartStore } from '@/stores/cartStore'
+
+const cartStore = useCartStore()
 
 /** 篩選按鈕 */
 const filters = [
@@ -93,9 +104,8 @@ const filteredProducts = computed(() => {
   return products.value.filter((p) => p.category === activeFilter.value)
 })
 
-function addToCart(product) {
-  // eslint-disable-next-line no-console
-  console.log('加入購物車：', product)
+function handleAddToCart(product) {
+  cartStore.addToCart(product)
 }
 </script>
 
@@ -123,25 +133,34 @@ function addToCart(product) {
 .filter-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 15px;
   margin-bottom: 3rem;
   flex-wrap: wrap;
 }
 
 .btn-filter {
   border: 1px solid #ddd;
-  padding: 8px 24px;
+  padding: 10px 28px;
   border-radius: 30px;
   background: white;
   color: #555;
-  transition: all 0.3s;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-filter:hover,
+/* 修正選中標籤的視覺效果：增加明顯底色與陰影 */
 .btn-filter.active {
   background-color: var(--brand-color);
   border-color: var(--brand-color);
   color: white;
+  box-shadow: 0 4px 12px rgba(207, 46, 90, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-filter:hover:not(.active) {
+  background-color: #f8f9fa;
+  border-color: var(--brand-color);
+  color: var(--brand-color);
 }
 
 /* 動畫 */

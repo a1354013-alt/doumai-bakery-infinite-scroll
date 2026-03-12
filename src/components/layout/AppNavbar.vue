@@ -25,10 +25,10 @@
           
           <!-- 購物車圖示 -->
           <li class="nav-item ms-lg-3">
-            <a class="nav-link cart-icon" href="#" @click.prevent>
+            <RouterLink class="nav-link cart-icon" to="/cart">
               <i class="bi bi-cart"></i>
-              <span class="cart-badge">0</span>
-            </a>
+              <span v-if="cartStore.totalCount > 0" class="cart-badge">{{ cartStore.totalCount }}</span>
+            </RouterLink>
           </li>
         </ul>
       </div>
@@ -39,6 +39,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useCartStore } from '@/stores/cartStore'
+
+const cartStore = useCartStore()
 
 // 導覽列資料配置：未來增加頁面只需在此修改，不需動到 HTML
 const navItems = [

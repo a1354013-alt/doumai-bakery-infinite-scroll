@@ -2,19 +2,8 @@
   <footer class="footer mt-auto">
     <div class="container py-5">
       <div class="row g-4">
-        <!-- 品牌介紹 -->
+        <!-- 快速連結 -->
         <div class="col-lg-4 col-md-6">
-          <h5 class="footer-title">{{ brandInfo.name }}</h5>
-          <p class="footer-desc">{{ brandInfo.description }}</p>
-          <div class="social-links">
-            <a v-for="social in socialLinks" :key="social.icon" :href="social.url" :title="social.name">
-              <i :class="['bi', social.icon]"></i>
-            </a>
-          </div>
-        </div>
-        
-        <!-- 快速連結 (資料驅動) -->
-        <div class="col-lg-2 col-md-6">
           <h5 class="footer-title">快速連結</h5>
           <ul class="footer-links">
             <li v-for="link in quickLinks" :key="link.path">
@@ -23,8 +12,8 @@
           </ul>
         </div>
 
-        <!-- 聯絡資訊 (資料驅動) -->
-        <div class="col-lg-3 col-md-6">
+        <!-- 聯絡資訊 -->
+        <div class="col-lg-4 col-md-6">
           <h5 class="footer-title">聯絡資訊</h5>
           <ul class="footer-info">
             <li v-for="info in contactDetails" :key="info.icon">
@@ -35,16 +24,28 @@
         </div>
 
         <!-- 營業時間 -->
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-4 col-md-6">
           <h5 class="footer-title">營業時間</h5>
           <p class="footer-text" v-html="openingHours"></p>
         </div>
       </div>
       
-      <hr class="my-4 opacity-25">
+      <hr class="my-5 opacity-25">
       
-      <div class="text-center">
-        <small class="copyright">© {{ new Date().getFullYear() }} {{ brandInfo.name }} All Rights Reserved.</small>
+      <!-- 底部品牌區塊：標語與 ICON -->
+      <div class="footer-bottom text-center">
+        <div class="brand-slogan mb-4">
+          <h4 class="fw-bold text-white mb-2">{{ brandInfo.name }}</h4>
+          <p class="footer-desc mb-0">{{ brandInfo.description }}</p>
+        </div>
+        
+        <div class="social-links mb-4">
+          <a v-for="social in socialLinks" :key="social.icon" :href="social.url" :title="social.name">
+            <i :class="['bi', social.icon]"></i>
+          </a>
+        </div>
+        
+        <small class="copyright text-muted">© {{ new Date().getFullYear() }} {{ brandInfo.name }} All Rights Reserved.</small>
       </div>
     </div>
   </footer>
@@ -83,7 +84,7 @@ const openingHours = '週一至週日<br>09:00 - 21:00'
 
 <style scoped>
 .footer {
-  background-color: #333;
+  background-color: #222;
   color: #eee;
 }
 
@@ -106,9 +107,9 @@ const openingHours = '週一至週日<br>09:00 - 21:00'
 }
 
 .footer-desc {
-  font-size: 0.9rem;
-  color: #bbb;
-  line-height: 1.8;
+  font-size: 1rem;
+  color: #aaa;
+  letter-spacing: 1px;
 }
 
 .footer-links, .footer-info {
@@ -119,11 +120,11 @@ const openingHours = '週一至週日<br>09:00 - 21:00'
 
 .footer-links li, .footer-info li {
   margin-bottom: 0.8rem;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .footer-links a {
-  color: #bbb;
+  color: #aaa;
   text-decoration: none;
   transition: color 0.3s;
 }
@@ -134,27 +135,28 @@ const openingHours = '週一至週日<br>09:00 - 21:00'
 
 .social-links a {
   color: #fff;
-  font-size: 1.2rem;
-  margin-right: 1rem;
+  font-size: 1.5rem;
+  margin: 0 1rem;
   transition: transform 0.3s, color 0.3s;
   display: inline-block;
 }
 
 .social-links a:hover {
   color: var(--brand-color);
-  transform: translateY(-3px);
-}
-
-.copyright {
-  color: #888;
-}
-
-.footer-info li {
-  display: flex;
-  align-items: flex-start;
+  transform: translateY(-5px);
 }
 
 .footer-info i {
   color: var(--brand-color);
+}
+
+.brand-slogan h4 {
+  font-family: 'Noto Serif TC', serif;
+  letter-spacing: 2px;
+}
+
+.copyright {
+  font-size: 0.8rem;
+  letter-spacing: 1px;
 }
 </style>

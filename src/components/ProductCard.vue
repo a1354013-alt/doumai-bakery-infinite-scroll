@@ -9,8 +9,14 @@
       <h5 class="product-title">{{ product.title }}</h5>
       <div class="product-price">NT. {{ product.price }}</div>
 
-      <button v-if="showAddCart" class="btn btn-add-cart" type="button" @click="$emit('add-to-cart', product)">
-        <i class="bi bi-cart-plus me-2"></i>加入購物車
+      <button 
+        v-if="showAddCart" 
+        class="btn btn-add-cart" 
+        type="button" 
+        :aria-label="'將 ' + product.title + ' 加入購物車'"
+        @click="$emit('add-to-cart', product)"
+      >
+        <i class="bi bi-cart-plus me-2" aria-hidden="true"></i>加入購物車
       </button>
     </div>
   </div>
